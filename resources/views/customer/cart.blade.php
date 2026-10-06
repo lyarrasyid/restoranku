@@ -81,7 +81,7 @@
                     $total = $subtotal + $tax;
                 @endphp
                 <div class="d-flex justify-content-end">
-                    <a href="{{-- route('cart.clear') --}}" class="btn btn-danger mb-4 me-3" onclick="return confirm('Apakah Anda yakin ingin mengosongkan keranjang?')">Kosongkan Keranjang</a>
+                    <a href="{{ route('cart.clear') }}" class="btn btn-danger mb-4 me-3" onclick="return confirm('Apakah Anda yakin ingin mengosongkan keranjang?')">Kosongkan Keranjang</a>
                 </div>
                 <div class="row g-4 justify-content-end mt-1">
                     <div class="col-8"></div>
@@ -120,19 +120,23 @@
 
 @section('scripts')
     <script>
-        function updateQuantity(menuId, change) {
-            const qtyInput = document.getElementById(`qty-${menuId}`);
-            let newQty = parseInt(qtyInput.value) + change;
+        function updateQuantity(itemId, change) {
+            var qtyInput = document.getElementById(`qty-${itemId}`);
+            var currentQty = parseInt(qtyInput.value);
+            var newQty = currentQty + change;
             if (newQty < 1) {
-                newQty = 1; // Prevent quantity from going below 1
+                if (confirm('Apakah Anda yakin ingin menghapus item ini dari keranjang?')) {
+                    removeItemFromCart(itemId);
+                }
+                return; // Exit the function if the item is removed
             }
-            fetch(`{{-- route('cart.update', '') --}}/${menuId}`, {     
+            fetch("{{ route('cart.update') }}", {      
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify({ qty: newQty })
+                body: JSON.stringify({  id: itemId,  qty: newQty })
             })
             .then(response => response.json())
             .then(data => {
@@ -143,8 +147,32 @@
                     alert(data.message);
                 }
             })
-            .catch((error) => { 
+            .catch((error) => {
                 console.error('Error:', error);
+                alert('Terjadi kesalahan saat memperbarui jumlah item. Silakan coba lagi.');
+            });
+        }
+
+        function removeItemFromCart(itemId) {
+            fetch("{{ route('cart.remove') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ id: itemId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menghapus item dari keranjang');
             });
         }
     </script>

@@ -12,7 +12,7 @@ class MenuController extends Controller
     {
         $tableNumber = $request->query('meja');
         if ($tableNumber) {
-            session::put('table_number', $tableNumber);
+            Session::put('table_number', $tableNumber);
         }
 
         $items = Item::where('is_active', 1)->orderBy('name', 'asc')->get();
@@ -21,7 +21,7 @@ class MenuController extends Controller
 
     public function cart()
     {
-        $cart = session::get('cart');
+        $cart = Session::get('cart');
         return view('customer.cart', compact('cart'));
     }
 
@@ -34,7 +34,7 @@ class MenuController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Menu item not found.'], 404);
         }
 
-        $cart = session::get('cart', []);
+        $cart = Session::get('cart', []);
 
         if (isset($cart[$menuId])) {
             $cart[$menuId]['qty'] += 1;
@@ -48,8 +48,52 @@ class MenuController extends Controller
             ];
         }
 
-        session::put('cart', $cart);
+        Session::put('cart', $cart);
 
         return response()->json(['status' => 'success', 'message' => 'Menu item added to cart.', 'cart' => $cart]);
+    }
+
+    public function updateCart(Request $request)
+    {
+        $itemId = $request->input('id');
+        $newQty = $request->input('qty');
+
+        if ($newQty < 0) {
+            return response()->json(['success' => false]);
+        }
+
+        $cart = Session::get('cart', []);
+
+        if (isset($cart[$itemId])) {
+            $cart[$itemId]['qty'] = $newQty;
+            Session::put('cart', $cart);
+            Session::flash('success', 'Cart updated successfully.');
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false]);
+    }
+
+    public function removeCart(Request $request)
+    {
+        $itemId = $request->input('id');
+        $cart = Session::get('cart', []);
+
+        if (isset($cart[$itemId])) {
+            unset($cart[$itemId]);
+            Session::put('cart', $cart);
+            Session::flash('success', 'Item removed from cart successfully.');
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false]);
+    }
+
+    public function clearCart()
+    {
+        Session::forget('cart');
+        return redirect()->route('cart')->with('success', 'Cart cleared successfully.');
     }
 }
