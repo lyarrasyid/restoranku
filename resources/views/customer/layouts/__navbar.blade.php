@@ -24,9 +24,9 @@
 
         <!-- Single Page Header start -->
         <div class="container-fluid page-header py-5">
-            <h1 class="text-center text-white display-6">Menu Kami</h1>
+            <h1 class="text-center text-white display-6">{{ request()->is('menu') ? 'Menu Kami' : (request()->is('cart') ? 'Keranjang' : (request()->is('checkout') ? 'Checkout' : '')) }}</h1>
             <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item active text-primary">Silakan pilih menu favorit anda</li>
+                <li class="breadcrumb-item active text-primary">{{ request()->is('menu') ? 'Silakan pilih menu favorit anda' : (request()->is('cart') ? 'Silakan periksa isi keranjang belanja anda' : (request()->is('checkout') ? 'Silakan lengkapi informasi pembayaran' : '')) }}</li>
             </ol>
         </div>
         <!-- Single Page Header End -->

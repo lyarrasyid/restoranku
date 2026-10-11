@@ -39,7 +39,7 @@
                                 <tr>
                                     <th scope="row">
                                         <div class="d-flex align-items-center">
-                                            <img src="{{ asset('img_item_upload/' . $item['image']) }}" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="">
+                                            <img src="{{ asset('img_item_upload/' . $item['image']) }}" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1591325418441-ff678baf78ef';">
                                         </div>
                                     </th>
                                     <td>
@@ -64,7 +64,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <p class="mb-0 mt-4">Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
+                                        <p class="mb-0 mt-4">Rp{{ number_format($item['price'] * $item['qty'], 0, ',', '.') }}</p>
                                     </td>
                                     <td>
                                         <button class="btn btn-md rounded-circle bg-light border mt-4" onclick="if(confirm('Apakah Anda yakin ingin menghapus item ini dari keranjang?')) { removeItemFromCart({{ $item['id'] }}); }">
@@ -108,7 +108,7 @@
                         </div>
                         <div class="d-flex justify-content-end">
                             <div class="mb-0 mb-3">
-                                <a href="{{-- route('checkout') --}}" class="btn border-secondary py-3 text-primary text-uppercase mb-4" type="button">Lanjut ke Pembayaran</a>
+                                <a href="{{ route('checkout') }}" class="btn border-secondary py-3 text-primary text-uppercase mb-4" type="button">Lanjut ke Pembayaran</a>
                             </div>
                         </div>
                     </div>
@@ -130,7 +130,7 @@
                 }
                 return; // Exit the function if the item is removed
             }
-            fetch("{{ route('cart.update') }}", {      
+            fetch("{{ route('cart.update') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
