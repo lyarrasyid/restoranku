@@ -32,7 +32,7 @@
                             <div class="row">
                                 <div class="col-md-12 col-lg-12">
                                     <div class="form-item">
-                                        <textarea name="text" class="form-control" spellcheck="false" cols="30" rows="5" placeholder="Catatan pesanan (Opsional)"></textarea>
+                                        <textarea name="note" class="form-control" spellcheck="false" cols="30" rows="5" placeholder="Catatan pesanan (Opsional)"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -118,7 +118,7 @@
                                     </div>
 
                                     <div class="d-flex justify-content-end">
-                                        <button type="submit" class="btn border-secondary py-3 text-uppercase text-primary">Konfirmasi Pesanan</button>
+                                        <button type="button" id="pay-button" class="btn border-secondary py-3 text-uppercase text-primary">Konfirmasi Pesanan</button>
                                     </div>
 
                                 </div>
@@ -128,4 +128,59 @@
                 </form>
             </div>
         </div>
+
+
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const payButton = document.getElementById('pay-button');
+        const form = document.querySelector('form');
+
+        payButton.addEventListener('click', function() {
+            let paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+
+            if (!paymentMethod) {
+                alert('Silakan pilih metode pembayaran terlebih dahulu.');
+                return;
+            }
+
+            paymentMethod = paymentMethod.value;
+            let formData = new FormData(form);
+
+            if (paymentMethod == 'tunai') {
+                form.submit();
+            } else {
+                fetch("{{ route('checkout.store') }}", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRF-TOKEN" : "{{ csrf_token() }}"
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.snap_token) {
+                        snap.pay(data.snap_token, {
+                            onSuccess: function(result) {
+                                window.location.href = "/checkout/success/" + data.order_code;
+                            },
+                            onPending: function(result) {
+                                alert('Menunggu pembayaran QRIS.');
+                            },
+                            onError: function(result) {
+                                alert('Terjadi kesalahan saat pembayaran. Silakan coba lagi.');
+                            }
+                        });
+                    } else {
+                        alert('Terjadi kesalahan saat membuat transaksi. Silakan coba lagi.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi.');
+                });
+            }
+        });
+    });
+</script>
 @endsection

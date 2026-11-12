@@ -18,6 +18,7 @@ class Order extends Model
         'status',
         'table_number',
         'payment_method',
+        'note',
         'created_at',
         'updated_at'
     ];

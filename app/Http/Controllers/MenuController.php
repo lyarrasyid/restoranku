@@ -132,7 +132,7 @@ class MenuController extends Controller
         }
 
         $total = 0;
-        foreach ($cart as $item) {  
+        foreach ($cart as $item) {
             $total += $item['price'] * $item['qty'];
         }
 
@@ -143,8 +143,8 @@ class MenuController extends Controller
             $itemDetails[] = [
                 'id' => $item['id'],
                 'name' => substr($item['name'], 0, 50),
-                'price' => (int)$item['price'] + $item['price'] * 0.1, // Add 10% tax to the price
-                'qty' => $item['qty'],
+                'price' => (int) ($item['price'] + $item['price'] * 0.1), // Add 10% tax to the price
+                'quantity' => $item['qty'],
             ];
         }
 
@@ -164,7 +164,7 @@ class MenuController extends Controller
             'status' => 'pending',
             'table_number' => $tableNumber,
             'payment_method' => $request->payment_method,
-            'notes' => $request->notes,
+            'note' => $request->note,
         ]);
 
         foreach ($cart as $itemId => $item) {
@@ -182,7 +182,41 @@ class MenuController extends Controller
         // Clear the cart after successful order placement
         Session::forget('cart');
 
-        return redirect()->route('checkout.success', ['orderId' => $order->order_code])->with('success', 'Order placed successfully!');
+        if ($request->payment_method == 'tunai') {
+            return redirect()->route('checkout.success', ['orderId' => $order->order_code])->with('success', 'Pesanan berhasil diuat!');
+        } else {
+            \Midtrans\Config::$serverKey = config('midtrans.server_key');
+            \Midtrans\Config::$isProduction = config('midtrans.is_production');
+            \Midtrans\Config::$isSanitized = true;
+            \Midtrans\Config::$is3ds = true;
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $order->order_code,
+                    'gross_amount' => (int) $order->grand_total,
+                ],
+                'item_details' => $itemDetails,
+                'customer_details' => [
+                    'first_name' => $user->fullname ?? 'Guest',
+                    'phone' => $user->phone,
+                ],
+                'payment_type' => 'qris',
+            ];
+
+            try {
+                $snapToken = \Midtrans\Snap::getSnapToken($params);
+                return response()->json([
+                    'status' => 'success',
+                    'snap_token' => $snapToken,
+                    'order_code' => $order->order_code,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gagal membuat pesanan. Silahkan coba lagi!'
+                ]);
+            }
+        }
     }
 
     public function checkoutSuccess($orderId)
