@@ -20,6 +20,13 @@
         <section class="section">
             <div class="card">
                 <div class="card-body">
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle"></i>
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
                     <table class="table table-striped" id="table1">
                         <thead>
                             <tr>
@@ -38,10 +45,10 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td class="w-25">
-                                        @if ($item->image)
-                                            <img src="{{ asset('img_item_upload/' . $item->image) }}" class="img-fluid w-50 rounded-top" alt="{{ $item->name }}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1591325418441-ff678baf78ef';">
+                                        @if ($item->img)
+                                            <img src="{{ asset('img_item_upload/' . $item->img) }}" class="img-fluid w-50 rounded-top" alt="{{ $item->name }}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1591325418441-ff678baf78ef';">
                                         @else
-                                            <img src="{{ asset('img_item_upload/' . $item->image) }}" class="img-fluid w-50 rounded-top" alt="{{ $item->name }}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1591325418441-ff678baf78ef';">
+                                            <img src="{{ asset('img_item_upload/' . $item->img) }}" class="img-fluid w-50 rounded-top" alt="{{ $item->name }}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1591325418441-ff678baf78ef';">
                                             {{-- <img src="{{ asset('assets/admin/static/images/no-image.png') }}" alt="No Image" width="100"> --}}
 
                                         @endif
@@ -77,17 +84,6 @@
                     </table>
                 </div>
             </div>
-
-        </section>
-    </div>
-                                </td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
         </section>
     </div>
 @endsection

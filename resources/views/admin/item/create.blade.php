@@ -24,23 +24,34 @@
             </div>
 
             <div class="card-body">
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <h5 class="alert-heading">Terjadi kesalahan!</h5>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <form class="form" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="name">Nama Menu</label>
-                                <input type="text" name="name" class="form-control" id="name" placeholder="Masukkan nama menu" required>
+                                <input type="text" name="name" class="form-control" id="name" placeholder="Masukkan nama menu" value="{{ old('name') }}" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="description">Deskripsi</label>
-                                <textarea name="description" class="form-control" id="description" rows="3" placeholder="Masukkan deskripsi menu"></textarea>
+                                <textarea name="description" class="form-control" id="description" rows="3" placeholder="Masukkan deskripsi menu">{{ old('description') }}</textarea>
                             </div>
 
                             <div class="form-group">
                                 <label for="price">Harga</label>
-                                <input type="number" name="price" class="form-control" id="price" placeholder="Masukkan harga menu" required>
+                                <input type="number" name="price" class="form-control" id="price" placeholder="Masukkan harga menu" value="{{ old('price') }}" required>
                             </div>
 
                             <div class="form-group">
@@ -48,14 +59,14 @@
                                 <select name="category_id" class="form-select" id="category_id" required>
                                     <option value="" disabled>Pilih menu</option>
                                     @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->cat_name }}</option>
+                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->cat_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label for="image">Gambar Menu</label>
-                                <input type="file" name="image" class="form-control" id="image">
+                                <label for="img">Gambar Menu</label>
+                                <input type="file" name="img" class="form-control" id="img" accept="image/*" value="{{ old('img') }}" >
                             </div>
 
                             <div class="form-group">
@@ -73,43 +84,7 @@
 
                         </div>
                     </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="basicInput">Basic Input</label>
-                            <input type="text" class="form-control" id="basicInput" placeholder="Enter email">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="helpInputTop">Input text with help</label>
-                            <small class="text-muted">eg.<i>someone@example.com</i></small>
-                            <input type="text" class="form-control" id="helpInputTop">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="helperText">With Helper Text</label>
-                            <input type="text" id="helperText" class="form-control" placeholder="Name">
-                            <p><small class="text-muted">Find helper text here for given textbox.</small></p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="disabledInput">Disabled Input</label>
-                            <input type="text" class="form-control" id="disabledInput" placeholder="Disabled Text"
-                                disabled>
-                        </div>
-                        <div class="form-group">
-                            <label for="readonlyInput">Readonly Input</label>
-                            <input type="text" class="form-control" id="readonlyInput" readonly="readonly"
-                                value="You can't update me :P">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="disabledInput">Static Text</label>
-                            <p class="form-control-static" id="staticInput">email@mazer.com</p>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </section>
