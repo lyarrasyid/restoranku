@@ -21,7 +21,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.role.create');
     }
 
     /**
@@ -29,7 +29,24 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'role_name' => 'required|string|max:255|unique:roles,role_name',
+            'description' => 'required|string|max:255',
+        ],
+        [
+            'role_name.required' => 'Nama role harus diisi.',
+            'role_name.string' => 'Nama role harus berupa teks.',
+            'role_name.max' => 'Nama role tidak boleh lebih dari 255 karakter.',
+            'role_name.unique' => 'Nama role sudah digunakan. Silakan pilih nama lain.',
+            'description.required' => 'Deskripsi role harus diisi.',
+            'description.string' => 'Deskripsi role harus berupa teks.',
+            'description.max' => 'Deskripsi role tidak boleh lebih dari 255 karakter.',
+        ]
+        );
+
+        Role::create($validatedData);
+
+        return redirect()->route('roles.index')->with('success', 'Role berhasil ditambahkan.');
     }
 
     /**
@@ -45,7 +62,8 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $role = Role::findOrFail($id);
+        return view('admin.role.edit', compact('role'));
     }
 
     /**
@@ -53,7 +71,26 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $role = Role::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'role_name' => 'required|string|max:255|unique:roles,role_name,' . $role->id,
+            'description' => 'required|string|max:255',
+        ],
+        [
+            'role_name.required' => 'Nama role harus diisi.',
+            'role_name.string' => 'Nama role harus berupa teks.',
+            'role_name.max' => 'Nama role tidak boleh lebih dari 255 karakter.',
+            'role_name.unique' => 'Nama role sudah digunakan. Silakan pilih nama lain.',
+            'description.required' => 'Deskripsi role harus diisi.',
+            'description.string' => 'Deskripsi role harus berupa teks.',
+            'description.max' => 'Deskripsi role tidak boleh lebih dari 255 karakter.',
+        ]
+        );
+
+        $role->update($validatedData);
+
+        return redirect()->route('roles.index')->with('success', 'Role berhasil diperbarui.');
     }
 
     /**
@@ -61,6 +98,9 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $role = Role::findOrFail($id);
+        $role->delete();
+
+        return redirect()->route('roles.index')->with('success', 'Role berhasil dihapus.');
     }
 }
