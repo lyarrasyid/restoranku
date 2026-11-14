@@ -63,7 +63,6 @@
                                     <td>{{ Str::limit($order->note, 50) ?? '-' }}</td>
                                     <td>{{ $order->created_at->format('d M Y H:i') }}</td>
                                     <td>
-                                        
                                         <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-info">
                                             <i class="bi bi-eye"></i>Lihat
                                         </a>

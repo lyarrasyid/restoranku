@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
-use App\Models\Item;
+use App\Models\OrderItem;
 
 class OrderController extends Controller
 {
@@ -17,6 +17,7 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = Order::findOrFail($id);
-        return view('admin.order.show', compact('order'));
+        $orderItems = OrderItem::where('order_id', $order->id)->get();
+        return view('admin.order.show', compact('order', 'orderItems'));
     }
 }
