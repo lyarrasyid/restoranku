@@ -70,6 +70,23 @@
                                         <a href="{{ route('items.edit', $item->id) }}" class="btn btn-sm btn-outline-warning">
                                             <i class="bi bi-pencil-square"></i> Edit
                                         </a>
+                                        @if ($item->is_active == 1)
+                                            <form action="{{ route('items.updateStatus', $item->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <input type="hidden" name="is_active" value="0">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Apakah anda yakin ingin menonaktifkan menu ini?')">
+                                                    <i class="bi bi-x-circle"></i> Nonaktifkan
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form action="{{ route('items.updateStatus', $item->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <input type="hidden" name="is_active" value="1">
+                                                <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Apakah anda yakin ingin mengaktifkan menu ini?')">
+                                                    <i class="bi bi-check-circle"></i> Aktifkan
+                                                </button>
+                                            </form>
+                                        @endif
                                         <form action="{{ route('items.destroy', $item->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')

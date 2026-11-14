@@ -36,6 +36,7 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 Route::resource('categories', CategoryController::class);
 Route::resource('items', ItemController::class);
+Route::post('items/update-status/{id}', [ItemController::class, 'updateStatus'])->name('items.updateStatus');
 Route::resource('orders', OrderController::class);
 Route::resource('roles', RoleController::class);
 Route::resource('users', UserController::class);

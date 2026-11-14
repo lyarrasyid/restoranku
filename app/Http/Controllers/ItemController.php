@@ -116,6 +116,15 @@ class ItemController extends Controller
         return redirect()->route('items.index')->with('success', 'Item updated successfully.');
     }
 
+    public function updateStatus($id)
+    {
+        $item = Item::findOrFail($id);
+        $item->is_active = !$item->is_active; // Toggle the status
+        $item->save();
+
+        return redirect()->route('items.index')->with('success', "Item status updated " . ($item->is_active ? 'to Active' : 'to Inactive') . " successfully.");
+    }
+
     /**
      * Remove the specified resource from storage.
      */
