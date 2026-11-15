@@ -50,7 +50,7 @@
                                     <td>{{ $order->user->fullname }}</td>
                                     <td>Rp {{ number_format($order->grand_total, 0, ',', '.') }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $order->status=='pending' ? 'warning' : 'success' }}">
+                                        <span class="badge bg-{{ $order->status=='pending' ? 'warning' : ($order->status == 'cooked' ? 'primary' : 'success') }}">
                                             {{ $order->status ?? 'N/A' }}
                                         </span>
                                     </td>
@@ -62,10 +62,27 @@
                                     </td>
                                     <td>{{ Str::limit($order->note, 50) ?? '-' }}</td>
                                     <td>{{ $order->created_at->format('d M Y H:i') }}</td>
-                                    <td>
+                                    <td class="text-nowrap">
                                         <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-info">
                                             <i class="bi bi-eye"></i>Lihat
                                         </a>
+                                        @if (Auth::user()->role->role_name == 'admin' || Auth::user()->role->role_name == 'cashier')
+                                            @if ($order->status == 'pending' && $order->payment_method == 'tunai')
+                                                <form action="{{ route('orders.settlement', $order->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                                        <i class="bi bi-check-circle"></i>Terima Pembayaran
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        @elseif (Auth::user()->role->role_name == 'chef' && $order->status == 'settlement')
+                                            <form action="{{ route('orders.cooked', $order->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-warning">
+                                                    <i class="bi bi-check-circle"></i>Pesanan Siap
+                                                </button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

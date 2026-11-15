@@ -66,7 +66,7 @@
                                             {{ $item->is_active == 1 ? 'Active' : 'Inactive' }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="text-nowrap">
                                         <a href="{{ route('items.edit', $item->id) }}" class="btn btn-sm btn-outline-warning">
                                             <i class="bi bi-pencil-square"></i> Edit
                                         </a>
@@ -87,13 +87,13 @@
                                                 </button>
                                             </form>
                                         @endif
-                                        <form action="{{ route('items.destroy', $item->id) }}" method="POST" class="d-inline">
+                                        {{-- <form action="{{ route('items.destroy', $item->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Apakah anda yakin ingin menghapus menu ini?')">
                                                 <i class="bi bi-trash"></i> Delete
                                             </button>
-                                        </form>
+                                        </form> --}}
                                     </td>
                                 </tr>
                             @endforeach

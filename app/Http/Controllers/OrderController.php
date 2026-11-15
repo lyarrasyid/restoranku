@@ -20,4 +20,22 @@ class OrderController extends Controller
         $orderItems = OrderItem::where('order_id', $order->id)->get();
         return view('admin.order.show', compact('order', 'orderItems'));
     }
+
+    public function settlement($id)
+    {
+        $order = Order::findOrFail($id);
+        $order->status = 'settlement';
+        $order->save();
+
+        return redirect()->route('orders.index')->with('success', 'Order status updated successfully.');
+    }
+
+    public function cooked($id)
+    {
+        $order = Order::findOrFail($id);
+        $order->status = 'cooked';
+        $order->save();
+
+        return redirect()->route('orders.index')->with('success', 'Order status cooked successfully.');
+    }
 }
